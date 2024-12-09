@@ -30,4 +30,6 @@ NEW_VERSION=$(echo $NEW_TAG | sed "s/^$TAG_PREFIX//")
 LAST_STABLE_RELEASE=$(git tag --sort='version:refname' | grep ^$TAG_PREFIX | grep -v beta | grep -vF "$NEW_TAG" | python $SELF_DIR/semver_sort.py $TAG_PREFIX | tail -n 1)
 LAST_STABLE_VERSION=$(echo $LAST_STABLE_RELEASE | sed "s/^$TAG_PREFIX//")
 
+echo "Checking for breaking changes between $LAST_STABLE_RELEASE / $LAST_STABLE_VERSION and $HEAD_SHA / $NEW_VERSION"
+
 python $SELF_DIR/check_breaking_changes.py $LAST_STABLE_RELEASE $HEAD_SHA $LAST_STABLE_VERSION $NEW_VERSION
