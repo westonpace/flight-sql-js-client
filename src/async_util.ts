@@ -134,8 +134,9 @@ export async function lastValueFrom<T>(iterable: AsyncIterable<T>): Promise<T | 
 
 export async function firstValueFrom<T>(iterable: AsyncIterable<T>): Promise<T | undefined> {
   for await (const value of iterable) {
-    // I don't know if this cancels the iterable or not.  I'm hoping, since we are returning early
-    // here, it knows to call the iterable's return method.
+    // Returning from the for/await loop early should trigger JS to call `return` on the iterator
+    // and this will cancel any underlying GRPC call so we don't waste time listening for more results
+    // in the background.
     return value;
   }
   return undefined;

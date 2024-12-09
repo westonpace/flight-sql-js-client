@@ -1,11 +1,16 @@
 {
-  "name": "arrow-flight-sql-client",
+  "name": "@lancedb/arrow-flight-sql-client",
   "version": "0.1.0",
   "description": "A native typescript project for querying Flight SQL endpoints",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsup",
     "test": "jest"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "Arrow",
     "FlightSQL",
@@ -21,6 +26,7 @@
     "prettier": "^3.4.2",
     "protobufjs-cli": "^1.1.3",
     "ts-jest": "^29.2.5",
+    "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.17.0"
   },

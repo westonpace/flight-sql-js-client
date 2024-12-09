@@ -88,7 +88,7 @@ export class QueryResult {
    * Warning: This will fully consume the stream, so if the stream is large, this may consume a lot of memory.
    * @returns an array of plain JS objects
    */
-  public async collectToObjects(): Promise<Record<string, unknown>[]> {
+  public async collectToObjects(): Promise<unknown[]> {
     const collectedBatches = await this.collectToArrow();
     const batchesOfRows = collectedBatches.map((batch) => batch.toArray());
     if (batchesOfRows.length == 0) {

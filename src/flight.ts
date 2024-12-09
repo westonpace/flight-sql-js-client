@@ -11,7 +11,9 @@ import { RecordBatchStreamReader, Schema } from "apache-arrow";
 import { Bidirectional, Stream } from "./grpc_util";
 import { RecordBatchStream } from "./arrow_util";
 
-const PROTO_PATH = __dirname + "/../protos/Flight.proto";
+// When developing we load files from ../protos
+// In production we load files from the same directory as JS files
+const PROTO_PATHS = [__dirname + "/../protos", __dirname];
 
 /**
  * A FlightInfo describes the schema and location of a flight.
@@ -117,11 +119,12 @@ export class FlightClient {
    * @param host The hostname / port of the server, separated by a colon
    */
   public constructor(host: string) {
-    const packageDefinition = loadSync(PROTO_PATH, {
+    const packageDefinition = loadSync("Flight.proto", {
       longs: String,
       enums: String,
       defaults: true,
       oneofs: true,
+      includeDirs: PROTO_PATHS,
     });
     this.protoDescriptor = loadPackageDefinition(packageDefinition);
     this.default_metadata = {};

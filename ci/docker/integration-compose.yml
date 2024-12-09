@@ -1,0 +1,28 @@
+services:
+  client:
+    image: client/tester
+    build:
+      context: ../..
+      dockerfile: ./ci/docker/tester.Dockerfile
+    depends_on:
+      server:
+        condition: service_started
+
+  local_server:
+    image: voltrondata/sqlflite:latest
+    environment:
+      TLS_ENABLED: 0
+      SQLFLITE_USERNAME: lancedb
+      SQLFLITE_PASSWORD: password
+    ports:
+      - 31337:31337
+    network_mode: host
+
+  server:
+    image: voltrondata/sqlflite:latest
+    environment:
+      TLS_ENABLED: 0
+      SQLFLITE_USERNAME: lancedb
+      SQLFLITE_PASSWORD: password
+    ports:
+      - 31337

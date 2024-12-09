@@ -41,3 +41,38 @@ most (or all) of the capabilities of a SQL database. We have not implemented ADB
 
 If you're interested in implementing ADBC for JavaScript, we recommend breaking the Flight/FlightSQL utilities into either
 a separate package or upstreaming into the Apache Arrow project. You could then build an ADBC client on top of that.
+
+## Testing
+
+Unit tests can be run with `npm test` or `npx jest`. Due to the nature of the library, most coverage is obtained via
+integration testing. There are few pure unit tests.
+
+Integration tests will run against a real FlightSQL server. The integration tests launch a flight server in a docker
+container and then run the tests in a separate container. This is done to ensure that the tests are run in a clean
+environment and that the tests are not dependent on the state of the project (e.g. make sure we are packing all the
+correct files into the `dist` directory).
+
+To run the integration tests, you will need to have Docker (and `docker-compose`) installed. You can then run the
+following commands:
+
+```bash
+docker-compose -f ci/docker/integration-compose.yml build
+docker-compose -f ci/docker/integration-compose.yml run client
+```
+
+This can be slow for rapid iteration. If you want to run integration tests locally and more quickly you can start
+a long-running FlightSQL server on your local machine (in a separate terminal) with the command:
+
+```bash
+docker-compose -f ci/docker/integration-compose.yml build local_server
+docker-compose -f ci/docker/integration-compose.yml run local_server
+```
+
+You can then run the integration tests with the commands:
+
+```bash
+npm link .. # Link the local package to the integration tests, only run this once
+npx jest
+```
+
+The integration tests should automatically detect a local server on port 31337 and run against it.
