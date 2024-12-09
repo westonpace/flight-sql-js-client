@@ -12,10 +12,10 @@ echo "Found previous tag $PREV_TAG"
 
 if [[ "$BUMP_MINOR" != "false" ]]; then
     # X.Y.Z -> X.(Y+1).0-beta.0
-    bump-my-version bump -vv --no-tag minor
+    bump-my-version bump -vv --no-commit --no-tag minor
 else
     # X.Y.Z -> X.Y.(Z+1)-beta.0
-    bump-my-version bump -vv --no-tag patch
+    bump-my-version bump -vv --no-commit --no-tag patch
 fi
 
 # The above bump will always bump to a pre-release version.
