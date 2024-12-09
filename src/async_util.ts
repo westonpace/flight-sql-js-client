@@ -134,6 +134,8 @@ export async function lastValueFrom<T>(iterable: AsyncIterable<T>): Promise<T | 
 
 export async function firstValueFrom<T>(iterable: AsyncIterable<T>): Promise<T | undefined> {
   for await (const value of iterable) {
+    // I don't know if this cancels the iterable or not.  I'm hoping, since we are returning early
+    // here, it knows to call the iterable's return method.
     return value;
   }
   return undefined;
