@@ -3,7 +3,6 @@ import { FlightSqlClient } from "./flightsql";
 import { arrow as fsql } from "./generated/flightsql";
 import { RecordBatch } from "apache-arrow";
 import { pipe, toArray } from "iter-ops";
-import { firstValueFrom } from "./async_util";
 
 /**
  * Options for creating a new client.
@@ -78,7 +77,7 @@ export class QueryResult {
    * @returns an array of Arrow record batches
    */
   public async collectToArrow(): Promise<RecordBatch[]> {
-    const batches = await firstValueFrom(pipe(this.raw, toArray()));
+    const batches = await pipe(this.raw, toArray()).first;
     return batches ?? [];
   }
 
