@@ -12,7 +12,7 @@ Currently all testing is done on Node.
 You can install the client using npm:
 
 ```bash
-npm install @lancedb/flightsql-client
+npm install @lancedb/arrow-flight-sql-client
 ```
 
 ## Usage
@@ -20,7 +20,7 @@ npm install @lancedb/flightsql-client
 To use the client, you first need to connect to your database:
 
 ```javascript
-import { Client } from "@lancedb/flightsql-client";
+import { Client } from "@lancedb/arrow-flight-sql-client";
 
 const client = await Client.connect({
   host: "mydb.com:10025",

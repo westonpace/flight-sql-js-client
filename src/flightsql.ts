@@ -29,7 +29,7 @@ export class FlightSqlClient {
     this.flight = flight;
   }
 
-  private async login(username: string, password: string): Promise<void> {
+  private async login(username: string, password: string, defaultDatabase?: string): Promise<void> {
     // Most servers seem to use Basic auth for the handshake to get a token.
     // The GRPC headers (and not the handshake request / response) are used to
     // transmit the username, password, and token.
@@ -50,23 +50,26 @@ export class FlightSqlClient {
       // The logic here is maybe not ideal.  If a server someone sends an empty metadata message and then
       // a populated data payload message, then we will see the empty payload message first and fail to
       // wait for the next message.  We can optimize this later if we see it in the wild.
-      const hello_rsp = await firstValueFrom(call.responses);
+      const helloRsp = await firstValueFrom(call.responses);
 
-      if (hello_rsp?.data?.payload) {
+      const defaultMetadata = {};
+      if (defaultDatabase) {
+        defaultMetadata["database"] = defaultDatabase;
+      }
+
+      if (helloRsp?.data?.payload) {
         // If we get a payload prefer that as a token
-        const payload = new TextDecoder().decode(hello_rsp.data.payload);
-        this.flight.set_default_metadata({
-          authorization: "Bearer " + payload,
-        });
-      } else if (hello_rsp?.metadata) {
+        const payload = new TextDecoder().decode(helloRsp.data.payload);
+        defaultMetadata["authorization"] = "Bearer " + payload;
+        this.flight.set_default_metadata(defaultMetadata);
+      } else if (helloRsp?.metadata) {
         // Otherwise if we get metadata then use that as the token
-        const authorization = hello_rsp.metadata.get_first_string("authorization");
+        const authorization = helloRsp.metadata.get_first_string("authorization");
         if (!authorization) {
           throw new Error("Handshake failed, metadata received but no authorization header present");
         }
-        this.flight.set_default_metadata({
-          authorization,
-        });
+        defaultMetadata["authorization"] = authorization;
+        this.flight.set_default_metadata(defaultMetadata);
       } else {
         throw new Error("Handshake failed, no metadata or data received from server before call completed");
       }
@@ -91,10 +94,15 @@ export class FlightSqlClient {
    * @param password The password to use for the handshake
    * @returns A client that can be used to execute queries
    */
-  public static async connect(host: string, username: string, password: string): Promise<FlightSqlClient> {
+  public static async connect(
+    host: string,
+    username: string,
+    password: string,
+    defaultDatabase?: string,
+  ): Promise<FlightSqlClient> {
     const sql = new FlightClient(host);
     const client = new FlightSqlClient(sql);
-    await client.login(username, password);
+    await client.login(username, password, defaultDatabase);
     return client;
   }
 

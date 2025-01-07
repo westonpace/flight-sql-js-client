@@ -21,6 +21,10 @@ export interface ClientOptions {
    */
   password: string;
   /**
+   * The default database to use (non-standard, only supported on some servers)
+   */
+  defaultDatabase?: string;
+  /**
    * Is the server using TLS?  If not, this must be set to true.
    */
   insecure?: boolean;
@@ -118,7 +122,12 @@ export class Client {
    * @returns A client that can be used to execute queries
    */
   public static async connect(options: ClientOptions): Promise<Client> {
-    const sql = await FlightSqlClient.connect(options.host, options.username, options.password);
+    const sql = await FlightSqlClient.connect(
+      options.host,
+      options.username,
+      options.password,
+      options.defaultDatabase,
+    );
     return new Client(sql);
   }
 
