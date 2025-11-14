@@ -73,6 +73,8 @@ describe("with a client we can", () => {
     const queryResult = await client.query("SELECT * FROM lineitem LIMIT 10");
     const result = await queryResult.collectToArrow();
     expect(result).toBeDefined();
-    expect(result.length).toBe(10);
+    expect(result.length).toBe(1);
+    const batch = result[0];
+    expect(batch.numRows).toBe(10);
   });
 });
